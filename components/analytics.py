@@ -7,7 +7,7 @@ import plotly.express as px
 import streamlit as st
 
 import database as db
-from components.dashboard import GREEN, RED, metric_card, money
+from components.dashboard import GREEN, RED, metric_card, money, style_fig
 
 
 def render():
@@ -33,9 +33,9 @@ def render():
 
     m1, m2, m3, m4 = st.columns(4)
     with m1:
-        metric_card("Total Income", money(totals["income"]), GREEN)
+        metric_card("Total Income", money(totals["income"]), GREEN, icon="↗", tint=GREEN)
     with m2:
-        metric_card("Total Expenses", money(totals["expenses"]), RED)
+        metric_card("Total Expenses", money(totals["expenses"]), RED, icon="↘", tint=RED)
     with m3:
         metric_card("Net Savings", money(totals["balance"]),
                     GREEN if totals["balance"] >= 0 else RED)
@@ -50,8 +50,7 @@ def render():
     if (df["expenses"] > 0).any():
         fig = px.bar(df, x="month", y="expenses", labels={"month": "Month", "expenses": "Expenses"},
                      color_discrete_sequence=[RED])
-        fig.update_layout(margin=dict(t=10, b=10, l=10, r=10), height=320)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(style_fig(fig), use_container_width=True)
     table = df.rename(columns={"month": "Month", "income": "Income", "expenses": "Expenses"})
     table["Net"] = table["Income"] - table["Expenses"]
     st.dataframe(table, use_container_width=True, hide_index=True,
